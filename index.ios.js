@@ -27,22 +27,31 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = { messages: [] }
+    this.timers = {};
   }
 
   componentDidMount() {
-    let self = this
+    let self = this;
     let preservedConsoleLog = console.log;
     console.log = (msg) => {
-      self.setState({ messages: [...self.state.messages, msg] })
+      self.setState({ messages: [...self.state.messages, msg] });
       preservedConsoleLog(msg);
     }
 
-    console.time = (msg) => {
-      preservedConsoleLog('time:', msg)
+    console.time = (timerId) => {
+      this.timers[timerId] = (new Date()).getTime();
+      preservedConsoleLog(timerId + ': time started');
     }
 
-    console.timeEnd = (msg) => {
-      preservedConsoleLog('timeEnd:', msg)
+    console.timeEnd = (timerId) => {
+      const timeEnd = (new Date()).getTime();
+      const timeStart = this.timers[timerId];
+      this.timers[timerId] = null;
+      if (timeStart) {
+        preservedConsoleLog(timerId + ': ' + (timeEnd - timeStart).toString() + 'ms');
+      } else {
+        preservedConsoleLog(timerId + ': undefined');
+      }
     }
 
     require('asyncstorage-down/test/test')
