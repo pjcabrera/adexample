@@ -1,12 +1,18 @@
-'use strict'
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ */
+'use strict';
 
-require('./shim')
-let React = require('react-native')
-let {
+require('./shim');
+
+import React, {
+  AppRegistry,
+  Component,
+  StyleSheet,
   Text,
-  View,
-  StyleSheet
-} = React
+  View
+} from 'react-native';
 
 let styles = React.StyleSheet.create({
   container: {
@@ -22,14 +28,26 @@ class App extends React.Component {
     super(props)
     this.state = { messages: [] }
   }
+
   componentDidMount() {
     let self = this
+    let preservedConsoleLog = console.log;
     console.log = (msg) => {
       self.setState({ messages: [...self.state.messages, msg] })
+      preservedConsoleLog(msg);
+    }
+
+    console.time = (msg) => {
+      preservedConsoleLog('time:', msg)
+    }
+
+    console.timeEnd = (msg) => {
+      preservedConsoleLog('timeEnd:', msg)
     }
 
     require('asyncstorage-down/test/test')
   }
+
   render() {
     return (
       <View style={styles.container}>
